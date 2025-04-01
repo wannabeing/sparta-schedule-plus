@@ -16,16 +16,17 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
-    private final ScheduleRepository scheduleRepository;
+
+    private final ScheduleRepository repository;
 
     /**
      * [Service] 일정 생성하는 메서드
      * @param dto 사용자가 입력한 일정요청 객체
      * @return 생성한 일정응답 객체 반환
      */
-    public ScheduleResponseDto create(ScheduleRequestDto dto){
+    public ScheduleResponseDto createSchedule(ScheduleRequestDto dto){
         Schedule schedule = new Schedule(dto);
-        return new ScheduleResponseDto(scheduleRepository.save(schedule));
+        return new ScheduleResponseDto(repository.save(schedule));
     }
 
     /**
@@ -33,8 +34,8 @@ public class ScheduleService {
      * @param id 사용자로부터 받은 일정 id
      * @return 조회된 일정 객체 반환
      */
-    public Schedule findById(Long id) {
-        return scheduleRepository
+    public Schedule findScheduleById(Long id) {
+        return repository
                 .findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유효하지 않은 ID 입니다."));
     }
@@ -44,7 +45,7 @@ public class ScheduleService {
      * @return 전체일정 목록 반환
      */
     public List<ScheduleResponseDto> findAllSchedules() {
-        List<Schedule> AllSchedules = scheduleRepository.findAll();
+        List<Schedule> AllSchedules = repository.findAll();
 
         return AllSchedules
                 .stream()
@@ -59,8 +60,8 @@ public class ScheduleService {
      * @return 수정된 일정응답 객체
      */
     @Transactional
-    public ScheduleResponseDto update(ScheduleRequestDto dto, Long id) {
-        Schedule existSchedule = this.findById(id);
+    public ScheduleResponseDto updateSchedule(ScheduleRequestDto dto, Long id) {
+        Schedule existSchedule = this.findScheduleById(id);
 
         existSchedule.updateSchedule(dto.getTitle(), dto.getContents());
 
@@ -73,8 +74,8 @@ public class ScheduleService {
      * @return API 응답 객체 반환
      */
     public ApiResponseDto deleteSchedule(Long id) {
-        scheduleRepository.existsByIdOrElseThrow(id);
-        scheduleRepository.deleteById(id);
+        repository.existsByIdOrElseThrow(id);
+        repository.deleteById(id);
 
         return new ApiResponseDto("success", "성공적으로 삭제하였습니다.");
     }

@@ -39,6 +39,11 @@ public class Schedule extends BaseEntity {
         this.contents = dto.getContents();
     }
 
+    /**
+     * 🚀 일정 업데이트 메서드
+     * @param title 일정 제목
+     * @param contents 일정 내용
+     */
     public void updateSchedule(String title, String contents){
         this.title = title;
         this.contents = contents;

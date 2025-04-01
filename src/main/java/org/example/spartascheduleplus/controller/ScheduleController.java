@@ -1,7 +1,7 @@
 package org.example.spartascheduleplus.controller;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.ApiResponseDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/schedule")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
@@ -28,7 +28,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleResponseDto> createSchedule(
             @Valid @RequestBody ScheduleRequestDto dto
     ){
-        return new ResponseEntity<>(scheduleService.create(dto), HttpStatus.CREATED);
+        return new ResponseEntity<>(scheduleService.createSchedule(dto), HttpStatus.CREATED);
     }
 
     /**
@@ -50,7 +50,7 @@ public class ScheduleController {
     public ResponseEntity<ScheduleResponseDto> findScheduleById(
             @PathVariable Long id
     ){
-        return new ResponseEntity<>(new ScheduleResponseDto(scheduleService.findById(id)), HttpStatus.OK);
+        return new ResponseEntity<>(new ScheduleResponseDto(scheduleService.findScheduleById(id)), HttpStatus.OK);
     }
 
     /**
@@ -64,7 +64,7 @@ public class ScheduleController {
             @Valid @RequestBody ScheduleRequestDto dto,
             @PathVariable Long id
     ){
-        return new ResponseEntity<>(scheduleService.update(dto, id), HttpStatus.OK);
+        return new ResponseEntity<>(scheduleService.updateSchedule(dto, id), HttpStatus.OK);
     }
 
     /**
