@@ -3,7 +3,7 @@ USE schedulePlus;
 -- 유저 테이블
 CREATE TABLE user (
                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                      user_name VARCHAR(255) NOT NULL,
+                      name VARCHAR(255) NOT NULL,
                       email VARCHAR(255) NOT NULL UNIQUE,
                       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
