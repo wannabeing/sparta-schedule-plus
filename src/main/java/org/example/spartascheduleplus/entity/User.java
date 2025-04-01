@@ -2,8 +2,7 @@ package org.example.spartascheduleplus.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.example.spartascheduleplus.dto.user.UserRepsonseDto;
-import org.example.spartascheduleplus.dto.user.UserRequestDto;
+import org.example.spartascheduleplus.dto.user.SignUpRequestDto;
 
 @Entity
 @Table(name="user")
@@ -19,28 +18,34 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     // ✅ 기본 생성자
     public User(){}
 
-    // ✅ 생성자 (RequestDTO 객체를 받아 생성)
-    public User(UserRequestDto dto){
+    // ✅ 생성자 (SignUpRequestDTO 객체를 받아 생성)
+    public User(SignUpRequestDto dto){
         this.name = dto.getName();
         this.email = dto.getEmail();
-    }
-
-    // ✅ 생성자 (ResponseDTO 객체를 받아 생성)
-    public User(UserRepsonseDto dto){
-        this.name = dto.getName();
-        this.email = dto.getEmail();
+        this.password = dto.getPassword();
     }
 
     /**
-     * 🚀 유저 업데이트 메서드
+     * 🚀 유저 정보 업데이트 메서드
      * @param name 유저 이름
      * @param email 유저 이메일
      */
     public void updateUser(String name, String email){
         this.name = name;
         this.email = email;
+    }
+
+    /**
+     * 🚀 유저 비밀번호 업데이트 메서드
+     * @param password 새 비밀번호
+     */
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }
