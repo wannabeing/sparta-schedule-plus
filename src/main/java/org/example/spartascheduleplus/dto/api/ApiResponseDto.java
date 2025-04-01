@@ -1,7 +1,4 @@
-package org.example.spartascheduleplus.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package org.example.spartascheduleplus.dto.api;
 
 /**
  * [API 응답 DTO]

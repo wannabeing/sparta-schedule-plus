@@ -2,7 +2,7 @@ package org.example.spartascheduleplus.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.spartascheduleplus.dto.ApiResponseDto;
+import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
 import org.example.spartascheduleplus.service.ScheduleService;

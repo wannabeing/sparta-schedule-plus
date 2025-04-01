@@ -2,7 +2,7 @@ package org.example.spartascheduleplus.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.spartascheduleplus.dto.ApiResponseDto;
+import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
 import org.example.spartascheduleplus.entity.Schedule;
