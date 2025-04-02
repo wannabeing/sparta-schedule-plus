@@ -15,7 +15,6 @@ public class UserRequestDto {
     @Size(max = 20, message = "이름은 20자 이내로 입력해주세요.")
     private final String name;
 
-    @NotBlank(message = "이메일을 입력해주세요.")
     @Size(max = 100, message = "이메일은 100자 이내로 입력해주세요.")
     @Email(message = "유효한 이메일 주소를 입력해주세요.")
     private final String email;

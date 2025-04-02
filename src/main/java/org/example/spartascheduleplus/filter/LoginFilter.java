@@ -1,27 +1,29 @@
 package org.example.spartascheduleplus.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.example.spartascheduleplus.dto.api.ApiResponseDto;
+import org.example.spartascheduleplus.dto.api.ErrorResponseDto;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 @Order(1)
 public class LoginFilter implements Filter {
 
-    // 로그인 필요 없는 URI 리스트
-    private static final String[] WHITE_LIST =
-            {"/" ,"/signup", "/user/login", "/user/logout", "/user/*",
-            "/schedule", "/schedule/*"};
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    // ObjectMapper(Jackson 라이브러리)가 LocalDateTime 인식 가능하게 설정
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     @Override
     public void doFilter(ServletRequest servletRequest,
@@ -42,7 +44,16 @@ public class LoginFilter implements Filter {
             HttpSession session = httpRequest.getSession(false); // 기존 세션 불러오기
 
             if(session == null || session.getAttribute("loginUser") == null){
-                ApiResponseDto responseDto = new ApiResponseDto("fail", "로그인이 필요합니다.");
+                // 에러 응답객체 생성
+                ErrorResponseDto responseDto = new ErrorResponseDto(
+                        LocalDateTime.now(),
+                        HttpStatus.UNAUTHORIZED.value(),
+                        HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                        requestURI,
+                        "로그인이 필요합니다.",
+                        null
+                );
+
                 httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 httpResponse.setContentType("application/json;charset=UTF-8");
                 httpResponse.getWriter().write(objectMapper.writeValueAsString(responseDto));
@@ -60,7 +71,7 @@ public class LoginFilter implements Filter {
      * @return 유효할 경우 true 반환
      */
     private boolean isPermittedRequest(String method, String uri) {
-        String[] permittedGetRequest = {"/", "/schedule", "/schedule/*", "/user/*"};
+        String[] permittedGetRequest = {"/", "/*", "/schedule", "/schedule/*", "/user/*"};
         String[] permittedPostRequest = {"/signup", "/user/login", "/user/logout"};
 
         // ✅ GET 요청

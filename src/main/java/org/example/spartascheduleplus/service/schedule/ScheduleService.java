@@ -2,7 +2,6 @@ package org.example.spartascheduleplus.service.schedule;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
 import org.example.spartascheduleplus.entity.schedule.Schedule;
@@ -66,12 +65,19 @@ public class ScheduleService {
     /**
      * [Service 특정 일정 수정 메서드
      * @param dto 사용자가 입력한 일정요청 객체
-     * @param id 사용자로부터 받은 일정 id
+     * @param scheduleId 일정 id
+     * @param loginUserId 로그인 유저 id
      * @return 수정된 일정응답 객체
      */
     @Transactional
-    public ScheduleResponseDto updateSchedule(ScheduleRequestDto dto, Long id) {
-        Schedule existSchedule = this.findScheduleById(id);
+    public ScheduleResponseDto updateSchedule(ScheduleRequestDto dto, Long scheduleId, Long loginUserId) {
+
+        Schedule existSchedule = this.findScheduleById(scheduleId);
+
+        // 사용자가 작성한 일정이 아닐 경우
+        if(!loginUserId.equals(existSchedule.getUser().getId())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 일정의 수정권한이 없습니다.");
+        }
 
         existSchedule.updateSchedule(dto.getTitle(), dto.getContents());
 
@@ -81,12 +87,11 @@ public class ScheduleService {
     /**
      * [Service] 특정 일정 삭제 메서드
      * @param id 사용자로부터 받은 일정 id
-     * @return API 응답 객체 반환
      */
-    public ApiResponseDto deleteSchedule(Long id) {
-        scheduleRepository.existsByIdOrElseThrow(id);
-        scheduleRepository.deleteById(id);
+    public void deleteSchedule(Long id) {
+        // 존재하는 일정인지 체크
+        this.findScheduleById(id);
 
-        return new ApiResponseDto("success", "성공적으로 삭제하였습니다.");
+        scheduleRepository.deleteById(id);
     }
 }

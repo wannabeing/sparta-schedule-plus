@@ -1,10 +1,10 @@
 package org.example.spartascheduleplus.entity.user;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.spartascheduleplus.dto.user.SignUpRequestDto;
 import org.example.spartascheduleplus.entity.BaseEntity;
 
 @Entity
@@ -37,9 +37,13 @@ public class User extends BaseEntity {
      * @param name 유저 이름
      * @param email 유저 이메일
      */
-    public void updateUser(String name, String email){
+    public void updateUser(String name, @Nullable String email){
         this.name = name;
-        this.email = email;
+
+        // email 값이 존재할 경우에만 수정
+        if (email !=null && !email.isBlank()) {
+            this.email = email;
+        }
     }
 
     /**
