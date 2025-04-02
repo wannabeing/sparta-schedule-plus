@@ -1,10 +1,10 @@
-package org.example.spartascheduleplus.controller;
+package org.example.spartascheduleplus.controller.user;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.user.SignUpRequestDto;
 import org.example.spartascheduleplus.dto.user.UserResponseDto;
-import org.example.spartascheduleplus.service.UserService;
+import org.example.spartascheduleplus.service.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +28,6 @@ public class SignUpController {
     public ResponseEntity<UserResponseDto> createUser(
             @Valid @RequestBody SignUpRequestDto dto
     ){
-        return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
+        return new ResponseEntity<>(userService.createUser(dto), HttpStatus.CREATED);
     }
 }

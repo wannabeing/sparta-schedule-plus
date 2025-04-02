@@ -1,10 +1,11 @@
-package org.example.spartascheduleplus.entity;
+package org.example.spartascheduleplus.entity.user;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.spartascheduleplus.dto.user.SignUpRequestDto;
+import org.example.spartascheduleplus.entity.BaseEntity;
 
 @Entity
 @Table(name="user")

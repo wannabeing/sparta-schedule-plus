@@ -1,6 +1,6 @@
-package org.example.spartascheduleplus.repository;
+package org.example.spartascheduleplus.repository.schedule;
 
-import org.example.spartascheduleplus.entity.Schedule;
+import org.example.spartascheduleplus.entity.schedule.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

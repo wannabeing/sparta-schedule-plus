@@ -17,7 +17,7 @@ public class SignUpRequestDto {
 
     @NotBlank(message = "이메일을 입력해주세요.")
     @Size(max = 100, message = "이메일은 100자 이내로 입력해주세요.")
-    @Email(message = "유효한 이메일 주소를 입력해주세요.")
+    @Email(message = "올바른 이메일 형식을 입력해주세요.")
     private final String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")

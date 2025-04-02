@@ -3,7 +3,7 @@ package org.example.spartascheduleplus.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import org.example.spartascheduleplus.entity.User;
+import org.example.spartascheduleplus.entity.user.User;
 
 import java.time.LocalDateTime;
 

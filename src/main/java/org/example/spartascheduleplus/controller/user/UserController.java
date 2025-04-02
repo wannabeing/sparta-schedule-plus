@@ -1,4 +1,4 @@
-package org.example.spartascheduleplus.controller;
+package org.example.spartascheduleplus.controller.user;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.user.*;
-import org.example.spartascheduleplus.service.UserService;
+import org.example.spartascheduleplus.service.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

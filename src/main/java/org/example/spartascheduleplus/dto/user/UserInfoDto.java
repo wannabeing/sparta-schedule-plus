@@ -1,7 +1,7 @@
 package org.example.spartascheduleplus.dto.user;
 
 import lombok.Getter;
-import org.example.spartascheduleplus.entity.User;
+import org.example.spartascheduleplus.entity.user.User;
 
 @Getter
 public class UserInfoDto {

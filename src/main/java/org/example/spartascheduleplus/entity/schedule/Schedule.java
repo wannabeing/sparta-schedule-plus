@@ -1,4 +1,4 @@
-package org.example.spartascheduleplus.entity;
+package org.example.spartascheduleplus.entity.schedule;
 
 
 import jakarta.persistence.*;
@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
+import org.example.spartascheduleplus.entity.BaseEntity;
+import org.example.spartascheduleplus.entity.user.User;
 
 
 @Entity

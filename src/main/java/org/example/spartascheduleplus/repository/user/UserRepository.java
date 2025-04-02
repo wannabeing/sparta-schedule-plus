@@ -1,6 +1,6 @@
-package org.example.spartascheduleplus.repository;
+package org.example.spartascheduleplus.repository.user;
 
-import org.example.spartascheduleplus.entity.User;
+import org.example.spartascheduleplus.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

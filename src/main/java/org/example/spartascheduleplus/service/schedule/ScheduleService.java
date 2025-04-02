@@ -1,13 +1,14 @@
-package org.example.spartascheduleplus.service;
+package org.example.spartascheduleplus.service.schedule;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
-import org.example.spartascheduleplus.entity.Schedule;
-import org.example.spartascheduleplus.entity.User;
-import org.example.spartascheduleplus.repository.ScheduleRepository;
+import org.example.spartascheduleplus.entity.schedule.Schedule;
+import org.example.spartascheduleplus.entity.user.User;
+import org.example.spartascheduleplus.repository.schedule.ScheduleRepository;
+import org.example.spartascheduleplus.service.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;

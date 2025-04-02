@@ -1,11 +1,11 @@
-package org.example.spartascheduleplus.service;
+package org.example.spartascheduleplus.service.user;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.user.*;
-import org.example.spartascheduleplus.entity.User;
-import org.example.spartascheduleplus.repository.UserRepository;
+import org.example.spartascheduleplus.entity.user.User;
+import org.example.spartascheduleplus.repository.user.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
