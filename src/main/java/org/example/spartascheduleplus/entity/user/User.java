@@ -25,11 +25,11 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    // ✅ 생성자 (SignUpRequestDTO 객체를 받아 생성)
-    public User(SignUpRequestDto dto){
-        this.name = dto.getName();
-        this.email = dto.getEmail();
-        this.password = dto.getPassword();
+    // ✅ 생성자
+    public User(String name, String email, String password){
+        this.name = name;
+        this.email = email;
+        this.password = password;
     }
 
     /**

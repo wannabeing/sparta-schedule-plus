@@ -7,6 +7,7 @@ import org.example.spartascheduleplus.dto.user.*;
 import org.example.spartascheduleplus.entity.user.User;
 import org.example.spartascheduleplus.repository.user.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserService {
 
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * [Service] 유저를 생성하는 메서드
@@ -23,7 +25,11 @@ public class UserService {
      * @return 생성된 유저응답 객체 반환
      */
     public UserResponseDto createUser(SignUpRequestDto dto) {
-        User user = new User(dto);
+        // 비밀번호 해시 암호화
+        String encryptedPassword = passwordEncoder.encode(dto.getPassword());
+
+        User user = new User(dto.getName(), dto.getEmail(), encryptedPassword);
+
         return new UserResponseDto(repository.save(user));
     }
 
@@ -38,7 +44,7 @@ public class UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 계정 입니다."));
 
         // [예외] 비밀번호가 일치하지 않을 경우 예외 처리
-        if (!dto.getPassword().equals(user.getPassword())) {
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -82,11 +88,13 @@ public class UserService {
         User existUser = this.findUser(id);
 
         // [예외] 비밀번호가 일치하지 않을 경우 예외 처리
-        if (!dto.getCurrentPassword().equals(existUser.getPassword())) {
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), existUser.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
-        existUser.updatePassword(dto.getNewPassword());
+        // 비밀번호 업데이트
+        String encryptedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+        existUser.updatePassword(encryptedNewPassword);
 
         return new ApiResponseDto("success", "비밀번호가 변경되었습니다.");
     }
@@ -97,7 +105,10 @@ public class UserService {
      * @return API 응답 객체 반환
      */
     public ApiResponseDto deleteUser(Long id) {
+        // 유저가 존재하는지 체크
         this.findUser(id);
+
+        // 유저 삭제
         repository.deleteById(id);
 
         return new ApiResponseDto("success", "성공적으로 삭제하였습니다.");
