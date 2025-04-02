@@ -3,15 +3,13 @@ package org.example.spartascheduleplus.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.api.ApiResponseDto;
-import org.example.spartascheduleplus.dto.user.SignUpRequestDto;
-import org.example.spartascheduleplus.dto.user.UserPasswordRequestDto;
-import org.example.spartascheduleplus.dto.user.UserResponseDto;
-import org.example.spartascheduleplus.dto.user.UserRequestDto;
+import org.example.spartascheduleplus.dto.user.*;
 import org.example.spartascheduleplus.entity.User;
 import org.example.spartascheduleplus.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +25,24 @@ public class UserService {
     public UserResponseDto createUser(SignUpRequestDto dto) {
         User user = new User(dto);
         return new UserResponseDto(repository.save(user));
+    }
+
+    /**
+     * [Service] 로그인 하는 메서드
+     * @param dto 사용자가 입력한 로그인요청 객체
+     * @return 유저응답 객체 반환
+     */
+    public UserResponseDto loginUser(LoginRequestDto dto){
+        User user = repository
+                .findByEmail(dto.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 계정 입니다."));
+
+        // [예외] 비밀번호가 일치하지 않을 경우 예외 처리
+        if (!dto.getPassword().equals(user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
+
+        return new UserResponseDto(user);
     }
 
     /**
@@ -62,11 +78,10 @@ public class UserService {
      */
     @Transactional
     public ApiResponseDto updatePassword(UserPasswordRequestDto dto, Long id){
+
         User existUser = this.findUser(id);
 
-        // FIXME: 추후 암호화 로직 필요
-        System.out.println(dto.getCurrentPassword());
-        System.out.println(dto.getNewPassword());
+        // [예외] 비밀번호가 일치하지 않을 경우 예외 처리
         if (!dto.getCurrentPassword().equals(existUser.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
@@ -82,7 +97,7 @@ public class UserService {
      * @return API 응답 객체 반환
      */
     public ApiResponseDto deleteUser(Long id) {
-        repository.existsByIdOrElseThrow(id);
+        this.findUser(id);
         repository.deleteById(id);
 
         return new ApiResponseDto("success", "성공적으로 삭제하였습니다.");

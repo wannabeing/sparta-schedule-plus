@@ -6,6 +6,7 @@ import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
 import org.example.spartascheduleplus.entity.Schedule;
+import org.example.spartascheduleplus.entity.User;
 import org.example.spartascheduleplus.repository.ScheduleRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,16 +18,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final ScheduleRepository repository;
+    private final ScheduleRepository scheduleRepository;
+    private final UserService userService;
 
     /**
      * [Service] 일정 생성하는 메서드
      * @param dto 사용자가 입력한 일정요청 객체
+     * @param loginUserId 세션에 저장된 유저 id
      * @return 생성한 일정응답 객체 반환
      */
-    public ScheduleResponseDto createSchedule(ScheduleRequestDto dto){
+    public ScheduleResponseDto createSchedule(
+            ScheduleRequestDto dto,
+            Long loginUserId){
+        User loginUser = userService.findUser(loginUserId);
+
         Schedule schedule = new Schedule(dto);
-        return new ScheduleResponseDto(repository.save(schedule));
+        schedule.setUser(loginUser);
+
+        return new ScheduleResponseDto(scheduleRepository.save(schedule));
     }
 
     /**
@@ -35,7 +44,7 @@ public class ScheduleService {
      * @return 조회된 일정 객체 반환
      */
     public Schedule findScheduleById(Long id) {
-        return repository
+        return scheduleRepository
                 .findById(id)
                 .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유효하지 않은 ID 입니다."));
     }
@@ -45,7 +54,7 @@ public class ScheduleService {
      * @return 전체일정 목록 반환
      */
     public List<ScheduleResponseDto> findAllSchedules() {
-        List<Schedule> AllSchedules = repository.findAll();
+        List<Schedule> AllSchedules = scheduleRepository.findAll();
 
         return AllSchedules
                 .stream()
@@ -74,8 +83,8 @@ public class ScheduleService {
      * @return API 응답 객체 반환
      */
     public ApiResponseDto deleteSchedule(Long id) {
-        repository.existsByIdOrElseThrow(id);
-        repository.deleteById(id);
+        scheduleRepository.existsByIdOrElseThrow(id);
+        scheduleRepository.deleteById(id);
 
         return new ApiResponseDto("success", "성공적으로 삭제하였습니다.");
     }

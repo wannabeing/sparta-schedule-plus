@@ -2,18 +2,14 @@ package org.example.spartascheduleplus.repository;
 
 import org.example.spartascheduleplus.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     /**
-     * [Repo] 존재하는지 확인하고, 존재하지 않으면 예외 처리 메서드
-     * @param id 존재여부 확인할 id
-     * @throws ResponseStatusException 존재하지 않을 경우, 404 예외 처리
+     * [Repo] 이메일로 사용자가 존재하는지 확인하는 메서드
+     * @param email 사용자 email
+     * return Optional User 객체 반환
      */
-    default void existsByIdOrElseThrow(Long id) {
-        if (!existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유효하지 않은 ID 입니다.");
-        }
-    }
+    Optional<User> findByEmail(String email);
 }

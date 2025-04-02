@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 
 
@@ -25,6 +26,7 @@ public class Schedule extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Setter
     private User user;
 
     // ✅ 생성자 (RequestDTO 객체를 받아 생성)

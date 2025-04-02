@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
+import org.example.spartascheduleplus.dto.user.UserResponseDto;
 import org.example.spartascheduleplus.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +23,19 @@ public class ScheduleController {
     /**
      * [Controller] 일정 생성 메서드
      * @param dto 사용자가 입력한 일정요청 객체
+     * @param loginUser 세션에 저장된 유저 객체
      * @return 생성된 일정응답 객체 반환
      */
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ScheduleResponseDto> createSchedule(
-            @Valid @RequestBody ScheduleRequestDto dto
+            @Valid @RequestBody ScheduleRequestDto dto,
+            @SessionAttribute(
+                    name = "loginUser")
+            UserResponseDto loginUser
     ){
-        return new ResponseEntity<>(scheduleService.createSchedule(dto), HttpStatus.CREATED);
+        return new ResponseEntity<>(scheduleService.createSchedule(
+                dto,loginUser.getId()),
+                HttpStatus.CREATED);
     }
 
     /**
