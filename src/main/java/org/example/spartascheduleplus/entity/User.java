@@ -1,12 +1,15 @@
 package org.example.spartascheduleplus.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.example.spartascheduleplus.dto.user.SignUpRequestDto;
 
 @Entity
 @Table(name="user")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +23,6 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private String password;
-
-    // ✅ 기본 생성자
-    public User(){}
 
     // ✅ 생성자 (SignUpRequestDTO 객체를 받아 생성)
     public User(SignUpRequestDto dto){
