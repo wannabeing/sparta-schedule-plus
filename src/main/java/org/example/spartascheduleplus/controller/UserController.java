@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.user.UserPasswordRequestDto;
-import org.example.spartascheduleplus.dto.user.UserRepsonseDto;
+import org.example.spartascheduleplus.dto.user.UserResponseDto;
 import org.example.spartascheduleplus.dto.user.UserRequestDto;
 import org.example.spartascheduleplus.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -19,15 +19,15 @@ public class UserController {
 
     // FIXME: 로그인된 유저 정보 반환으로 수정해야 함
     @GetMapping("/{id}")
-    public ResponseEntity<UserRepsonseDto> findUser(
+    public ResponseEntity<UserResponseDto> findUser(
             @PathVariable Long id
     ){
-        return new ResponseEntity<>(new UserRepsonseDto(userService.findUser(id)), HttpStatus.OK);
+        return new ResponseEntity<>(new UserResponseDto(userService.findUser(id)), HttpStatus.OK);
     }
 
     // FIXME: 로그인된 유저 정보로 수정해야 함
     @PostMapping("/{id}")
-    public ResponseEntity<UserRepsonseDto> updateUser(
+    public ResponseEntity<UserResponseDto> updateUser(
             @Valid @RequestBody UserRequestDto dto,
             @PathVariable Long id
     ){

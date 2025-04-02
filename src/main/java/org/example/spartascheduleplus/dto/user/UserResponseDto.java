@@ -3,13 +3,12 @@ package org.example.spartascheduleplus.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import org.example.spartascheduleplus.entity.Schedule;
 import org.example.spartascheduleplus.entity.User;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class UserRepsonseDto {
+public class UserResponseDto {
     private final Long id;
 
     private final String name;
@@ -23,7 +22,7 @@ public class UserRepsonseDto {
     private final LocalDateTime updatedAt;
 
     // ✅ 생성자 (User 객체를 받아 생성)
-    public UserRepsonseDto(User user) {
+    public UserResponseDto(User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();

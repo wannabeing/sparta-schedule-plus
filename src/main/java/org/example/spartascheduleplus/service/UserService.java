@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.api.ApiResponseDto;
 import org.example.spartascheduleplus.dto.user.SignUpRequestDto;
 import org.example.spartascheduleplus.dto.user.UserPasswordRequestDto;
-import org.example.spartascheduleplus.dto.user.UserRepsonseDto;
+import org.example.spartascheduleplus.dto.user.UserResponseDto;
 import org.example.spartascheduleplus.dto.user.UserRequestDto;
 import org.example.spartascheduleplus.entity.User;
 import org.example.spartascheduleplus.repository.UserRepository;
@@ -24,9 +24,9 @@ public class UserService {
      * @param dto 사용자가 입력한 가입요청 객체
      * @return 생성된 유저응답 객체 반환
      */
-    public UserRepsonseDto createUser(SignUpRequestDto dto) {
+    public UserResponseDto createUser(SignUpRequestDto dto) {
         User user = new User(dto);
-        return new UserRepsonseDto(repository.save(user));
+        return new UserResponseDto(repository.save(user));
     }
 
     /**
@@ -47,11 +47,11 @@ public class UserService {
      * @return 수정된 유저응답 객체 반환
      */
     @Transactional
-    public UserRepsonseDto updateUser(UserRequestDto dto, Long id) {
+    public UserResponseDto updateUser(UserRequestDto dto, Long id) {
         User existUser = this.findUser(id);
         existUser.updateUser(dto.getName(), dto.getEmail());
 
-        return new UserRepsonseDto(existUser);
+        return new UserResponseDto(existUser);
     }
 
     /**

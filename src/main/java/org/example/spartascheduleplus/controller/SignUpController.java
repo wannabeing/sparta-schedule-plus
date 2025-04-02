@@ -3,7 +3,7 @@ package org.example.spartascheduleplus.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.user.SignUpRequestDto;
-import org.example.spartascheduleplus.dto.user.UserRepsonseDto;
+import org.example.spartascheduleplus.dto.user.UserResponseDto;
 import org.example.spartascheduleplus.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class SignUpController {
      * @return 생성된 유저응답 객체 반환
      */
     @PostMapping
-    public ResponseEntity<UserRepsonseDto> createUser(
+    public ResponseEntity<UserResponseDto> createUser(
             @Valid @RequestBody SignUpRequestDto dto
     ){
         return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
