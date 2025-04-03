@@ -32,9 +32,10 @@ public class Schedule extends BaseEntity {
     private User user;
 
     // ✅ 생성자 (RequestDTO 객체를 받아 생성)
-    public Schedule(ScheduleRequestDto dto){
+    public Schedule(ScheduleRequestDto dto, User user){
         this.title = dto.getTitle();
         this.contents = dto.getContents();
+        this.user = user;
     }
 
     /**

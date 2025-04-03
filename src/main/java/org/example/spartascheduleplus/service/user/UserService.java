@@ -40,7 +40,7 @@ public class UserService {
     public UserResponseDto loginUser(LoginRequestDto dto){
         User user = repository
                 .findByEmail(dto.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 계정 입니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 계정입니다."));
 
         // [예외] 비밀번호가 일치하지 않을 경우 예외 처리
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {

@@ -37,7 +37,7 @@ public class SignUpController {
                         HttpStatus.CREATED.value(),
                         HttpStatus.CREATED.getReasonPhrase(),
                         httpRequest.getRequestURI(),
-                        "유저를 성공적으로 삭제하였습니다.",
+                        "유저를 성공적으로 생성하였습니다.",
                         userService.createUser(dto)
                 ),
                 HttpStatus.CREATED);

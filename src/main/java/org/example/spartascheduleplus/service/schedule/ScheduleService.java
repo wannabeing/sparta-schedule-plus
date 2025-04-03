@@ -32,8 +32,7 @@ public class ScheduleService {
             Long loginUserId){
         User loginUser = userService.findUser(loginUserId);
 
-        Schedule schedule = new Schedule(dto);
-        schedule.setUser(loginUser);
+        Schedule schedule = new Schedule(dto, loginUser);
 
         return new ScheduleResponseDto(scheduleRepository.save(schedule));
     }
@@ -43,20 +42,22 @@ public class ScheduleService {
      * @param id 사용자로부터 받은 일정 id
      * @return 조회된 일정 객체 반환
      */
-    public Schedule findScheduleById(Long id) {
+    public Schedule findScheduleById(Long id)
+    {
         return scheduleRepository
                 .findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유효하지 않은 ID 입니다."));
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 일정입니다."));
     }
 
     /**
      * 전체 일정 조회 메서드
      * @return 전체일정 목록 반환
      */
-    public List<ScheduleResponseDto> findAllSchedules() {
-        List<Schedule> AllSchedules = scheduleRepository.findAll();
+    public List<ScheduleResponseDto> findAllSchedules()
+    {
+        List<Schedule> allSchedules = scheduleRepository.findAll();
 
-        return AllSchedules
+        return allSchedules
                 .stream()
                 .map(ScheduleResponseDto::new)
                 .toList();
@@ -70,8 +71,9 @@ public class ScheduleService {
      * @return 수정된 일정응답 객체
      */
     @Transactional
-    public ScheduleResponseDto updateSchedule(ScheduleRequestDto dto, Long scheduleId, Long loginUserId) {
-
+    public ScheduleResponseDto updateSchedule(
+            ScheduleRequestDto dto, Long scheduleId, Long loginUserId)
+    {
         Schedule existSchedule = this.findScheduleById(scheduleId);
 
         // 사용자가 작성한 일정이 아닐 경우
