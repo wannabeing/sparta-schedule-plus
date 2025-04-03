@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = false) // 존재하지 않는 필드가 들어오면 무시 false
+@JsonIgnoreProperties // 존재하지 않는 필드가 들어오면 예외 발생 (default: false)
 @Getter
 public class UserRequestDto {
     @NotBlank(message = "이름을 입력해주세요.")
