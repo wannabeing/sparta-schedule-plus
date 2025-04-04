@@ -26,7 +26,7 @@ public class Comment extends BaseEntity {
     @Setter
     private Schedule schedule;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @Setter
     private User user;
@@ -36,7 +36,6 @@ public class Comment extends BaseEntity {
         this.schedule = schedule;
         this.user = user;
     }
-
 
     public void updateComment(String comment){
         this.comment = comment;
