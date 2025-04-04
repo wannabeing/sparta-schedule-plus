@@ -6,11 +6,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.api.SuccessResponseDto;
 import org.example.spartascheduleplus.dto.user.*;
+import org.example.spartascheduleplus.exception.ResponseExceptionProvider;
 import org.example.spartascheduleplus.service.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 
@@ -34,7 +34,7 @@ public class UserController {
         // 이미 로그인 되었을 경우에 예외 처리
         HttpSession session = httpRequest.getSession(false);
         if (session != null && session.getAttribute("loginUser") != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 로그인하셨습니다.");
+            throw ResponseExceptionProvider.conflict("이미 로그인하셨습니다.");
         }
 
         // 로그인 및 유저 응답객체 반환
@@ -175,7 +175,7 @@ public class UserController {
         // 이미 로그아웃 되었을 경우에 예외 처리
         HttpSession session = httpRequest.getSession(false);
         if (session == null || session.getAttribute("loginUser") == null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 로그아웃하셨습니다.");
+            throw ResponseExceptionProvider.conflict("이미 로그아웃 하셨습니다.");
         }
 
         // 세션에서 로그인 정보 삭제

@@ -6,11 +6,10 @@ import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
 import org.example.spartascheduleplus.entity.schedule.Schedule;
 import org.example.spartascheduleplus.entity.user.User;
+import org.example.spartascheduleplus.exception.ResponseExceptionProvider;
 import org.example.spartascheduleplus.repository.schedule.ScheduleRepository;
 import org.example.spartascheduleplus.service.user.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class ScheduleService {
     {
         return scheduleRepository
                 .findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 일정입니다."));
+                .orElseThrow(()-> ResponseExceptionProvider.notFound("존재하지 않는 일정입니다."));
     }
 
     /**
@@ -78,11 +77,10 @@ public class ScheduleService {
 
         // 사용자가 작성한 일정이 아닐 경우
         if(!loginUserId.equals(existSchedule.getUser().getId())){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 일정의 수정권한이 없습니다.");
+            throw ResponseExceptionProvider.forbidden("해당 일정의 수정권한이 없습니다.");
         }
 
         existSchedule.updateSchedule(dto.getTitle(), dto.getContents());
-
         return new ScheduleResponseDto(existSchedule);
     }
 
@@ -91,7 +89,6 @@ public class ScheduleService {
      * @param id 사용자로부터 받은 일정 id
      */
     public void deleteSchedule(Long id) {
-        // 존재하는 일정인지 체크
         this.findScheduleById(id);
 
         scheduleRepository.deleteById(id);

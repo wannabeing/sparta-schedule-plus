@@ -4,11 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.spartascheduleplus.dto.user.*;
 import org.example.spartascheduleplus.entity.user.User;
+import org.example.spartascheduleplus.exception.ResponseExceptionProvider;
 import org.example.spartascheduleplus.repository.user.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 
 @Service
@@ -24,10 +23,9 @@ public class UserService {
      * @return 생성된 유저응답 객체 반환
      */
     public UserResponseDto createUser(SignUpRequestDto dto) {
-        // 비밀번호 해시 암호화
-        String encryptedPassword = passwordEncoder.encode(dto.getPassword());
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
 
-        User user = new User(dto.getName(), dto.getEmail(), encryptedPassword);
+        User user = new User(dto.getName(), dto.getEmail(), encodedPassword);
 
         return new UserResponseDto(repository.save(user));
     }
@@ -40,12 +38,10 @@ public class UserService {
     public UserResponseDto loginUser(LoginRequestDto dto){
         User user = repository
                 .findByEmail(dto.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 계정입니다."));
+                .orElseThrow(()-> ResponseExceptionProvider.notFound("존재하지 않는 계정입니다."));
 
-        // [예외] 비밀번호가 일치하지 않을 경우 예외 처리
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
-        }
+        // 비밀번호가 일치하지 않을 경우 예외 처리
+        validatePasswordMatch(dto.getPassword(), user.getPassword());
 
         return new UserResponseDto(user);
     }
@@ -58,7 +54,7 @@ public class UserService {
     public User findUser(Long id) {
         return repository
                 .findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "유효하지 않은 ID 입니다."));
+                .orElseThrow(()-> ResponseExceptionProvider.notFound("유효하지 않은 ID 입니다."));
     }
 
     /**
@@ -69,7 +65,6 @@ public class UserService {
      */
     @Transactional
     public UserResponseDto updateUser(UserRequestDto dto, Long id) {
-
         User existUser = this.findUser(id);
 
         // 이메일 입력을 안했을 경우, 이름만 업데이트
@@ -77,15 +72,11 @@ public class UserService {
             existUser.updateUser(dto.getName(), null);
         }
 
-        // 이메일 입력을 했을 경우, 이메일 중복체크
+        // 이메일 입력을 했을 경우
         else {
-            boolean isDifferent = !existUser.getEmail().equals(dto.getEmail()); // 기존 이메일과 입력 이메일이 다르면 true
-            boolean isDuplicate = repository.findByEmail(dto.getEmail()).isPresent(); // 입력한 이메일이 이미 존재하면 true
+            // 이메일 중복체크
+            validateEmailDuplicate(dto.getEmail(), existUser.getEmail());
 
-            if (isDifferent && isDuplicate) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
-            }
-            // 중복이 아니라면 이메일/이름 업데이트
             existUser.updateUser(dto.getName(), dto.getEmail());
         }
 
@@ -99,17 +90,13 @@ public class UserService {
      */
     @Transactional
     public void updatePassword(UserPasswordRequestDto dto, Long id){
-
         User existUser = this.findUser(id);
 
-        // [예외] 비밀번호가 일치하지 않을 경우 예외 처리
-        if (!passwordEncoder.matches(dto.getCurrentPassword(), existUser.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
-        }
+        // 현재 비밀번호가 일치하지 않을 경우 예외 처리
+        validatePasswordMatch(dto.getCurrentPassword(), existUser.getPassword());
 
-        // 비밀번호 업데이트
-        String encryptedNewPassword = passwordEncoder.encode(dto.getNewPassword());
-        existUser.updatePassword(encryptedNewPassword);
+        String encodedPassword = passwordEncoder.encode(dto.getNewPassword());
+        existUser.updatePassword(encodedPassword);
     }
 
     /**
@@ -117,9 +104,33 @@ public class UserService {
      * @param id 유저 id
      */
     public void deleteUser(Long id) {
-        // 존재하는 유저인지 체크
         this.findUser(id);
 
         repository.deleteById(id);
+    }
+
+    /**
+     * 🚀 입력한 비밀번호와 암호화 된 비밀번호가 일치하는지 확인하는 메서드
+     * @param rawPassword 입력한 비밀번호
+     * @param encodedPassword 암호화된 비밀번호
+     */
+    private void validatePasswordMatch(String rawPassword, String encodedPassword){
+        if(!passwordEncoder.matches(rawPassword, encodedPassword)){
+            throw ResponseExceptionProvider.unauthorized("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    /**
+     * 🚀 입력한 이메일의 중복 여부를 확인하는 메서드
+     * @param requestEmail 입력한 이메일
+     * @param userEmail 사용자의 이메일
+     */
+    private void validateEmailDuplicate(String requestEmail, String userEmail){
+        boolean isDifferent = !userEmail.equals(requestEmail); // 사용자 기존 이메일과 입력 이메일이 다르면 true
+        boolean isDuplicate = repository.findByEmail(requestEmail).isPresent(); // 입력한 이메일이 이미 존재하면 true
+
+        if (isDifferent && isDuplicate) {
+            throw ResponseExceptionProvider.conflict("이미 사용 중인 이메일입니다.");
+        }
     }
 }
