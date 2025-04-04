@@ -2,22 +2,25 @@ package org.example.spartascheduleplus.service.schedule;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.spartascheduleplus.dto.schedule.PagedScheduleResponseDto;
+import org.example.spartascheduleplus.dto.schedule.ScheduleDetailResponseDto;
 import org.example.spartascheduleplus.dto.schedule.ScheduleRequestDto;
-import org.example.spartascheduleplus.dto.schedule.ScheduleResponseDto;
 import org.example.spartascheduleplus.entity.schedule.Schedule;
 import org.example.spartascheduleplus.entity.user.User;
 import org.example.spartascheduleplus.exception.ResponseExceptionProvider;
 import org.example.spartascheduleplus.repository.schedule.ScheduleRepository;
 import org.example.spartascheduleplus.service.user.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+
     private final UserService userService;
 
     /**
@@ -26,14 +29,14 @@ public class ScheduleService {
      * @param loginUserId 세션에 저장된 유저 id
      * @return 생성한 일정응답 객체 반환
      */
-    public ScheduleResponseDto createSchedule(
+    public ScheduleDetailResponseDto createSchedule(
             ScheduleRequestDto dto,
             Long loginUserId){
         User loginUser = userService.findUser(loginUserId);
 
         Schedule schedule = new Schedule(dto, loginUser);
 
-        return new ScheduleResponseDto(scheduleRepository.save(schedule));
+        return new ScheduleDetailResponseDto(scheduleRepository.save(schedule));
     }
 
     /**
@@ -49,17 +52,25 @@ public class ScheduleService {
     }
 
     /**
-     * 전체 일정 조회 메서드
-     * @return 전체일정 목록 반환
+     * [Service] 상세 일정응답 객체를 생성하는 메서드
+     * @param id 일정 id
+     * @return 상세 일정응답 객체를 반환
      */
-    public List<ScheduleResponseDto> findAllSchedules()
+    public ScheduleDetailResponseDto createDetailScheduleDto(Long id)
     {
-        List<Schedule> allSchedules = scheduleRepository.findAll();
+        return new ScheduleDetailResponseDto(findScheduleById(id));
+    }
 
-        return allSchedules
-                .stream()
-                .map(ScheduleResponseDto::new)
-                .toList();
+    /**
+     * 전체 일정 조회 메서드
+     * @param pageable 페이징 객체
+     * @return 페이징일정 응답객체 반환
+     */
+    public PagedScheduleResponseDto findAllSchedules(Pageable pageable)
+    {
+        Page<Schedule> pagedSchedule = scheduleRepository.findAll(pageable);
+
+        return new PagedScheduleResponseDto(pagedSchedule);
     }
 
     /**
@@ -70,7 +81,7 @@ public class ScheduleService {
      * @return 수정된 일정응답 객체
      */
     @Transactional
-    public ScheduleResponseDto updateSchedule(
+    public ScheduleDetailResponseDto updateSchedule(
             ScheduleRequestDto dto, Long scheduleId, Long loginUserId)
     {
         Schedule existSchedule = this.findScheduleById(scheduleId);
@@ -81,16 +92,22 @@ public class ScheduleService {
         }
 
         existSchedule.updateSchedule(dto.getTitle(), dto.getContents());
-        return new ScheduleResponseDto(existSchedule);
+        return new ScheduleDetailResponseDto(existSchedule);
     }
 
     /**
      * [Service] 특정 일정 삭제 메서드
-     * @param id 사용자로부터 받은 일정 id
+     * @param scheduleId 삭제하려는 일정 id
+     * @param loginUserId 로그인유저 id
      */
-    public void deleteSchedule(Long id) {
-        this.findScheduleById(id);
+    public void deleteSchedule(Long scheduleId, Long loginUserId)
+    {
+        Schedule existSchedule = this.findScheduleById(scheduleId);
 
-        scheduleRepository.deleteById(id);
+        // 로그인유저가 작성한 일정인지 확인
+        if(!existSchedule.getUser().getId().equals(loginUserId)){
+            throw ResponseExceptionProvider.unauthorized("일정의 삭제권한이 없습니다.");
+        }
+        scheduleRepository.deleteById(scheduleId);
     }
 }
