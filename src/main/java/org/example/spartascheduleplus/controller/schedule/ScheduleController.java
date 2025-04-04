@@ -103,7 +103,7 @@ public class ScheduleController {
      * @param httpRequest Http 요청 객체
      * @return 수정된 상세일정 응답 객체 반환
      */
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<SuccessResponseDto<ScheduleDetailResponseDto>> updateSchedule(
             @Valid @RequestBody ScheduleRequestDto dto,
             @PathVariable Long id,

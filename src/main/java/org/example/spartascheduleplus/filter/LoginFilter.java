@@ -71,15 +71,22 @@ public class LoginFilter implements Filter {
      * @return 유효할 경우 true 반환
      */
     private boolean isPermittedRequest(String method, String uri) {
+        String[] disallowedGetRequest = {"/user/me"};
         String[] permittedPostRequest = {"/signup", "/user/login", "/user/logout"};
 
-        // ✅ GET 요청
-        if (method.equals("GET")) {
+        // ✅ GET 요청 (로그인이 필요한 경우)
+        if (method.equals("GET") && PatternMatchUtils.simpleMatch(
+                disallowedGetRequest, uri))
+        {
+            return true;
+        }
+        // ✅ GET 요청 (위 조건 이외에 모든 GET 요청은 true)
+        if(method.equals("GET")){
             return true;
         }
 
         // ✅ POST 요청 (유효한 요청이 아닐 경우, false 반환)
-        return method.equals("POST") && PatternMatchUtils.simpleMatch(
+        return (method.equals("POST") || method.equals("PATCH")) && PatternMatchUtils.simpleMatch(
                 permittedPostRequest, uri);
     }
 }

@@ -89,7 +89,7 @@ public class CommentController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<SuccessResponseDto<CommentDetailResponseDto>> findCommentById(
-            @PathVariable String scheduleId,
+            @PathVariable Long scheduleId,
             @PathVariable Long id,
             HttpServletRequest httpRequest)
     {
@@ -98,7 +98,7 @@ public class CommentController {
                         HttpStatus.OK,
                         httpRequest.getRequestURI(),
                         "단일 댓글을 조회합니다.",
-                        commentService.createCommentResponseDto(id)
+                        commentService.createCommentResponseDto(id, scheduleId)
                 ),
                 HttpStatus.OK
         );
@@ -113,7 +113,7 @@ public class CommentController {
      * @param httpRequest httpRequest
      * @return 수정된 상세댓글 응답 객체를 반환
      */
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<SuccessResponseDto<CommentDetailResponseDto>> updateComment(
             @Valid @RequestBody CommentRequestDto dto,
             @PathVariable Long scheduleId,
@@ -128,7 +128,7 @@ public class CommentController {
                         HttpStatus.OK,
                         httpRequest.getRequestURI(),
                         "일정 수정을 완료했습니다.",
-                        commentService.updateComment(dto, id, loginUser.getId())
+                        commentService.updateComment(dto, id, scheduleId, loginUser.getId())
                 ),
                 HttpStatus.OK
         );
@@ -153,7 +153,7 @@ public class CommentController {
             HttpServletRequest httpRequest
     ){
         // 특정 일정 삭제
-        commentService.deleteComment(id, loginUser.getId());
+        commentService.deleteComment(id, scheduleId, loginUser.getId());
 
         return new ResponseEntity<>(
                 createSuccessResponseDto(

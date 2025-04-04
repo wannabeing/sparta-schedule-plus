@@ -112,7 +112,7 @@ public class UserController {
      * @param httpRequest Http 요청 객체
      * @return API 성공 응답객체 반환
      */
-    @PostMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<SuccessResponseDto<UserResponseDto>> updateUser(
             @Valid @RequestBody UserRequestDto dto,
             @SessionAttribute(
@@ -139,7 +139,7 @@ public class UserController {
      * @param httpRequest Http 요청 객체
      * @return API 성공 응답객체 반환
      */
-    @PostMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<SuccessResponseDto> updatePassword(
             @Valid @RequestBody UserPasswordRequestDto dto,
             @SessionAttribute(

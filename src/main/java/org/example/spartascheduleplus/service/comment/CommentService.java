@@ -48,8 +48,10 @@ public class CommentService {
      * @param commentId 댓글 id
      * @return 댓글 객체
      */
-    public Comment findCommentById(Long commentId)
+    public Comment findCommentById(Long commentId, Long scheduleId)
     {
+        scheduleService.findScheduleById(scheduleId);
+
         return commentRepository
                 .findById(commentId)
                 .orElseThrow(() -> ResponseExceptionProvider.notFound("존재하지 않는 댓글입니다."));
@@ -60,8 +62,8 @@ public class CommentService {
      * @param id 댓글 id
      * @return 댓글응답 객체를 반환
      */
-    public CommentDetailResponseDto createCommentResponseDto(Long id){
-        return new CommentDetailResponseDto(findCommentById(id));
+    public CommentDetailResponseDto createCommentResponseDto(Long id, Long scheduleId){
+        return new CommentDetailResponseDto(findCommentById(id, scheduleId));
     }
 
     /**
@@ -87,13 +89,15 @@ public class CommentService {
      * [Service] 댓글 수정하는 메서드
      * @param dto 사용자가 입력한 댓글요청 객체
      * @param commentId 댓글 id
+     * @param scheduleId 일정 id
      * @param userId 유저 id
      * @return 댓글 응답객체 반환
      */
     @Transactional
-    public CommentDetailResponseDto updateComment(CommentRequestDto dto, Long commentId, Long userId)
+    public CommentDetailResponseDto updateComment(
+            CommentRequestDto dto, Long commentId, Long scheduleId, Long userId)
     {
-        Comment existComment = this.findCommentById(commentId);
+        Comment existComment = this.findCommentById(commentId, scheduleId);
 
         // 사용자가 작성한 일정이 아닐 경우
         if(!userId.equals(existComment.getUser().getId())){
@@ -107,11 +111,13 @@ public class CommentService {
     /**
      * [Service] 댓글 삭제하는 메서드
      * @param commentId 삭제하려는 댓글 id
+     * @param scheduleId 일정 id
      * @param loginUserId 로그인유저 id
      */
-    public void deleteComment(Long commentId, Long loginUserId)
+    public void deleteComment(
+            Long commentId, Long scheduleId, Long loginUserId)
     {
-        Comment existComment = this.findCommentById(commentId);
+        Comment existComment = this.findCommentById(commentId, scheduleId);
 
         // 로그인유저가 작성한 댓글인지 확인
         if(!existComment.getUser().getId().equals(loginUserId)){

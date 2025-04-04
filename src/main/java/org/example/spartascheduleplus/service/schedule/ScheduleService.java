@@ -106,7 +106,7 @@ public class ScheduleService {
 
         // 로그인유저가 작성한 일정인지 확인
         if(!existSchedule.getUser().getId().equals(loginUserId)){
-            throw ResponseExceptionProvider.unauthorized("일정의 삭제권한이 없습니다.");
+            throw ResponseExceptionProvider.forbidden("일정의 삭제권한이 없습니다.");
         }
         scheduleRepository.deleteById(scheduleId);
     }
