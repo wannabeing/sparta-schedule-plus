@@ -1,4 +1,4 @@
-package org.example.spartascheduleplus.controller.controller;
+package org.example.spartascheduleplus.controller.comment;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
