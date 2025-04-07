@@ -9,14 +9,11 @@ import org.example.spartascheduleplus.entity.comment.Comment;
 
 @Getter
 public class CommentDetailResponseDto extends CommentResponseDto {
-    private final UserInfoDto user;
-
     private final ScheduleInfoDto schedule;
 
     // ✅ 생성자 (Comment 객체를 받아 생성)
-    public CommentDetailResponseDto(Comment comment) {
-        super(comment); // 부모 생성자 호출
-        this.user = new UserInfoDto(comment.getUser());
+    public CommentDetailResponseDto(Comment comment, UserInfoDto user) {
+        super(comment, user); // 부모 생성자 호출
         this.schedule = new ScheduleInfoDto(comment.getSchedule());
     }
 }

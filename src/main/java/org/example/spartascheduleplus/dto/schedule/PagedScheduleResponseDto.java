@@ -3,8 +3,6 @@ package org.example.spartascheduleplus.dto.schedule;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import org.example.spartascheduleplus.dto.common.PageInfo;
-import org.example.spartascheduleplus.entity.schedule.Schedule;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -15,9 +13,11 @@ public class PagedScheduleResponseDto {
     private final List<ScheduleResponseDto> schedules;
 
     // ✅ 생성자 (페이징일정 객체를 받아 생성)
-    public PagedScheduleResponseDto(Page<Schedule> pagedSchedule)
+    public PagedScheduleResponseDto(
+            PageInfo page,
+            List<ScheduleResponseDto> schedules)
     {
-        this.page = new PageInfo(pagedSchedule);
-        this.schedules = pagedSchedule.map(ScheduleResponseDto::new).getContent();
+        this.page = page;
+        this.schedules = schedules;
     }
 }
