@@ -1,10 +1,11 @@
 package org.example.spartascheduleplus.service.comment;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.example.spartascheduleplus.dto.comment.CommentRequestDto;
+import java.util.List;
+
 import org.example.spartascheduleplus.dto.comment.CommentDetailResponseDto;
+import org.example.spartascheduleplus.dto.comment.CommentResponseDto;
 import org.example.spartascheduleplus.dto.comment.PagedCommentResponseDto;
+import org.example.spartascheduleplus.dto.common.PageInfo;
 import org.example.spartascheduleplus.dto.schedule.ScheduleInfoDto;
 import org.example.spartascheduleplus.dto.user.UserInfoDto;
 import org.example.spartascheduleplus.entity.comment.Comment;
@@ -13,116 +14,69 @@ import org.example.spartascheduleplus.entity.user.User;
 import org.example.spartascheduleplus.exception.ResponseExceptionProvider;
 import org.example.spartascheduleplus.repository.comment.CommentRepository;
 import org.example.spartascheduleplus.service.schedule.ScheduleService;
-import org.example.spartascheduleplus.service.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
-    private final CommentRepository commentRepository;
+	private final CommentRepository commentRepository;
+	private final ScheduleService scheduleService;
 
-    private final UserService userService;
-    private final ScheduleService scheduleService;
+	/**
+	 * [Service] 일정의 모든 댓글을 조회하는 메서드
+	 * @param schedule 일정 객체
+	 * @param pageable 페이징 객체
+	 * @return 페이징 댓글응답 객체 반환
+	 */
+	public PagedCommentResponseDto findAllComments(Schedule schedule, Pageable pageable) {
+		// 일정, 유저 정보 DTO
+		ScheduleInfoDto scheduleInfoDto = new ScheduleInfoDto(schedule);
+		UserInfoDto userInfoDto = new UserInfoDto(schedule.getUser());
 
-    /**
-     * [Service] 댓글 생성하는 메서드
-     * @param dto 사용자가 입력한 댓글요청 객체
-     * @param scheduleId 일정 id
-     * @param userId 유저 id
-     * @return 생성한 댓글응답 객체 반환
-     */
-    public CommentDetailResponseDto createComment(CommentRequestDto dto, Long scheduleId, Long userId)
-    {
-        Schedule schedule = scheduleService.findScheduleById(scheduleId);
-        User user = userService.findUser(userId);
+		Page<Comment> pagedComment = commentRepository.findAllByScheduleId(scheduleInfoDto.getId(), pageable);
+		List<CommentResponseDto> comments = pagedComment
+			.map(comment -> new CommentResponseDto(comment, userInfoDto))
+			.getContent();
 
-        Comment comment = new Comment(dto.getComment(), schedule, user);
-        return new CommentDetailResponseDto(commentRepository.save(comment));
-    }
+		return new PagedCommentResponseDto(
+			new PageInfo(pagedComment),
+			scheduleInfoDto,
+			comments
+		);
+	}
 
-    /**
-     * [Service] 댓글 조회하는 메서드
-     * @param commentId 댓글 id
-     * @return 댓글 객체
-     */
-    public Comment findCommentById(Long commentId, Long scheduleId)
-    {
-        scheduleService.findScheduleById(scheduleId);
+	/**
+	 * [Service] 댓글 조회하는 메서드
+	 * @param commentId 댓글 id
+	 * @return 댓글 객체
+	 */
+	public Comment findCommentById(Long commentId) {
+		return commentRepository
+			.findById(commentId)
+			.orElseThrow(() -> ResponseExceptionProvider.notFound("존재하지 않는 댓글입니다."));
+	}
 
-        return commentRepository
-                .findById(commentId)
-                .orElseThrow(() -> ResponseExceptionProvider.notFound("존재하지 않는 댓글입니다."));
-    }
+	/**
+	 * [Service] 댓글 생성하는 메서드
+	 * @param comment 댓글 객체
+	 * @param user 유저 객체
+	 * @return 생성한 댓글응답 객체 반환
+	 */
+	public CommentDetailResponseDto createComment(Comment comment, User user) {
+		return new CommentDetailResponseDto(
+			commentRepository.save(comment),
+			new UserInfoDto(user));
+	}
 
-    /**
-     * [Service] 댓글응답 객체를 생성하는 메서드
-     * @param id 댓글 id
-     * @return 댓글응답 객체를 반환
-     */
-    public CommentDetailResponseDto createCommentResponseDto(Long id, Long scheduleId){
-        return new CommentDetailResponseDto(findCommentById(id, scheduleId));
-    }
-
-    /**
-     * [Service] 일정의 모든 댓글을 조회하는 메서드
-     * @param scheduleId 일정 id
-     * @param pageable 페이징 객체
-     * @return 페이징 댓글응답 객체 반환
-     */
-    public PagedCommentResponseDto findAllComments(Long scheduleId, Pageable pageable)
-    {
-        // 존재하는 일정인지 체크
-        Schedule existSchedule = scheduleService.findScheduleById(scheduleId);
-
-        Page<Comment> pagedComment = commentRepository.findAllByScheduleId(scheduleId, pageable);
-
-        UserInfoDto userInfoDto = new UserInfoDto(existSchedule.getUser());
-        ScheduleInfoDto scheduleInfoDto = new ScheduleInfoDto(existSchedule);
-
-        return new PagedCommentResponseDto(pagedComment, userInfoDto, scheduleInfoDto);
-    }
-
-    /**
-     * [Service] 댓글 수정하는 메서드
-     * @param dto 사용자가 입력한 댓글요청 객체
-     * @param commentId 댓글 id
-     * @param scheduleId 일정 id
-     * @param userId 유저 id
-     * @return 댓글 응답객체 반환
-     */
-    @Transactional
-    public CommentDetailResponseDto updateComment(
-            CommentRequestDto dto, Long commentId, Long scheduleId, Long userId)
-    {
-        Comment existComment = this.findCommentById(commentId, scheduleId);
-
-        // 사용자가 작성한 일정이 아닐 경우
-        if(!userId.equals(existComment.getUser().getId())){
-            throw ResponseExceptionProvider.forbidden("해당 댓글의 수정권한이 없습니다.");
-        }
-
-        existComment.updateComment(dto.getComment());
-        return new CommentDetailResponseDto(existComment);
-    }
-
-    /**
-     * [Service] 댓글 삭제하는 메서드
-     * @param commentId 삭제하려는 댓글 id
-     * @param scheduleId 일정 id
-     * @param loginUserId 로그인유저 id
-     */
-    public void deleteComment(
-            Long commentId, Long scheduleId, Long loginUserId)
-    {
-        Comment existComment = this.findCommentById(commentId, scheduleId);
-
-        // 로그인유저가 작성한 댓글인지 확인
-        if(!existComment.getUser().getId().equals(loginUserId)){
-            throw ResponseExceptionProvider.unauthorized("댓글의 삭제권한이 없습니다.");
-        }
-        commentRepository.deleteById(commentId);
-    }
+	/**
+	 * [Service] 댓글 삭제하는 메서드
+	 * @param commentId 삭제하려는 댓글 id
+	 */
+	public void deleteComment(Long commentId) {
+		commentRepository.deleteById(commentId);
+	}
 }
