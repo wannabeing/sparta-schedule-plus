@@ -69,18 +69,17 @@ public class CommentFacade {
 	 * [Facade] 댓글 수정하는 메서드
 	 * @param dto 사용자가 입력한 댓글요청 객체
 	 * @param commentId 댓글 id
-	 * @param scheduleId 일정 id
 	 * @param loginUserId 로그인 유저 id
 	 * @return 댓글 응답객체 반환
 	 */
 	@Transactional
 	public CommentDetailResponseDto update(
-		CommentRequestDto dto, Long commentId, Long scheduleId, Long loginUserId) {
+		CommentRequestDto dto, Long commentId, Long loginUserId) {
 		Comment existComment = commentService.findCommentById(commentId);
 		User commentUser = existComment.getUser();
 
 		// 사용자가 작성한 일정이 아닐 경우
-		if (!loginUserId.equals(commentUser.getId())) {
+		if (commentUser.isMyId(loginUserId)) {
 			throw ResponseExceptionProvider.forbidden("해당 댓글의 수정권한이 없습니다.");
 		}
 
@@ -103,7 +102,7 @@ public class CommentFacade {
 		Comment comment = commentService.findCommentById(commentId);
 
 		// 로그인유저가 작성한 댓글인지 확인
-		if (!comment.getUser().getId().equals(loginUserId)) {
+		if (comment.isMyComment(loginUserId)) {
 			throw ResponseExceptionProvider.unauthorized("댓글의 삭제권한이 없습니다.");
 		}
 

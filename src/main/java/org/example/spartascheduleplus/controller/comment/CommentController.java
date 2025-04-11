@@ -129,7 +129,7 @@ public class CommentController {
 				HttpStatus.OK,
 				httpRequest.getRequestURI(),
 				"일정 수정을 완료했습니다.",
-				commentFacade.update(dto, scheduleId, id, loginUser.getId())
+				commentFacade.update(dto, id, loginUser.getId())
 			),
 			HttpStatus.OK
 		);
