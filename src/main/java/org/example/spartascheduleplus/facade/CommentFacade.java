@@ -98,7 +98,7 @@ public class CommentFacade {
 	public void delete(
 		Long commentId, Long scheduleId, Long loginUserId) {
 		// 존재하는 일정인지 체크
-		scheduleService.findScheduleById(scheduleId);
+		scheduleService.existScheduleById(scheduleId);
 		Comment comment = commentService.findCommentById(commentId);
 
 		// 로그인유저가 작성한 댓글인지 확인

@@ -51,4 +51,14 @@ public class ScheduleService {
 	public void deleteSchedule(Long scheduleId) {
 		scheduleRepository.deleteById(scheduleId);
 	}
+
+	/**
+	 * [Service] 특정 일정 존재 여부 메서드
+	 * @param scheduleId 일정 id
+	 */
+	public void existScheduleById(Long scheduleId) {
+		if (!scheduleRepository.existsById(scheduleId)) {
+			throw ResponseExceptionProvider.notFound("존재하지 않는 일정입니다.");
+		}
+	}
 }
